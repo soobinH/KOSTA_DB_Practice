@@ -116,3 +116,25 @@ SELECT * FROM student WHERE birthday LIKE '1976%';
 
 -- student 테이블에서 8월생 학생들 조회
 SELECT * FROM student WHERE birthday LIKE '_____08%';
+
+-- professor 테이블에서 naver 이메일을 사용하는 교수의 교수번호, 이름, 이메일 조회
+SELECT profno, NAME, email FROM professor WHERE email LIKE '%naver.com';
+
+-- 칼럼의 null 값 비교는 is null 사용
+-- emp 테이블에서 최고 관리자 조회
+SELECT * FROM emp WHERE mgr IS NULL;
+
+-- is null의 반대는 is not null
+-- emp 테이블에서 커미션이 있는 사원의 사번, 이름, 급여, 커미션 조회
+SELECT empno, ename, sal, comm FROM emp WHERE comm IS NOT NULL and comm != 0; 
+
+-- emp 테이블에서 사번, 이름, sal + comm 조회
+SELECT empno, ename, sal+ IFNULL(comm, 0) AS salary FROM emp; -- null과 더해지는 값은 모두 null이 된다. 따라서 ifnull 사용해서 null값을 숫자로 바꾸어야 한다.
+
+-- emp 테이블에서 커미션이 없는 사람은 10으로 곗나해서연봉을 조회
+-- 조회 칼럼은 사번, 이름, 부서 번호, 급여, 커미션, 연봉(급여*12+커미션)	
+SELECT empno, ename, deptno, sal, comm, sal*12+IFNULL(0, 10) AS 연봉 FROM emp;
+
+-- professor 테이블에서 교수번호, 이름, 직급, 급여, 보너스, 총 급여(급여+보너스) 조회
+SELECT profno, NAME, POSITION, pay, bonus, pay+IFNULL(bonus, 0) AS 총급여 FROM professor;
+
