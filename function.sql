@@ -201,10 +201,126 @@ SELECT NOW(), EXTRACT(HOUR FROM NOW()) AS 'HOUR';
 SELECT NOW(), EXTRACT(MINUTE FROM NOW()) AS 'MINUTE';
 SELECT NOW(), EXTRACT(SECOND FROM NOW()) AS 'SECOND';
 
+-- EMP 테이블에서 1분기에 입사한 직원의 사번, 이름, 입사일 조회
+SELECT empno, ename, hiredate, EXTRACT(QUARTER FROM hiredate) 분기 FROM emp
+ORDER BY 분기;
+
+-- TIME_TO_SEC : 시간을 초로 변환
+SELECT CURTIME(), TIME_TO_SEC(CURTIME());
+
+-- TIMEDIFF
+SELECT CURTIME(), TIMEDIFF(CURTIME(), '09:48:00'), TIME_TO_SEC(timediff(CURTIME(), '09:48:00'));
+
+-- TIMESTAMPDIFF
+SELECT
+hiredate,
+CURDATE(),
+TIMESTAMPDIFF(HOUR, hiredate, NOW()),
+TIMESTAMPDIFF(SECOND, hiredate, NOW())
+FROM emp;
+
+SELECT DATEDIFF(CURTIME(), '1972-04-03'),
+TIMESTAMPDIFF(HOUR,'1972-04-03', NOW());
+select TIMESTAMPDIFF(minute, '2003-11-06', NOW());
+
+-- student 테이블에서 학생들의 학번, 이름, 생일, 태어나고 현재까지의 시간과 초조회
+SELECT studno, NAME, birthday, TIMESTAMPDIFF(HOUR, birthday, NOW()) birth2hour, TIMESTAMPDIFF(SECOND, birthday, NOW()) birth2second
+FROM student;
+
 -- ----------------------------------------
 -- 숫자 함수
 -- ----------------------------------------
 
+-- COUNT : 조건에 만족하는 레코드(행) 수
+SELECT COUNT(*) FROM emp;
+SELECT COUNT(empno) FROM emp; -- 해당 칼럼이 null인 데이터는 카운트에서 제외한다.
+SELECT COUNT(mgr) FROM emp; -- 해당 칼럼이 null인 데이터는 카운트에서 제외한다.
+
+-- emp 테이블에서 부서번호가 10인 직원 수
+SELECT COUNT(*) FROM emp WHERE deptno= 10;
+
+-- sum : 조건에 만족하는 해당 칼럼의 합
+-- emp 테이블에서 전 직원의 급여 합
+SELECT SUM(sal) FROM emp;
+
+SELECT SUM(sal), SUM(comm), SUM(sal)+SUM(comm) FROM emp;
+SELECT SUM(sal), SUM(comm), SUM(sal)+SUM(comm) FROM emp WHERE deptno = 30;
+
+-- AVG : 조건에 만족하는 해당 칼럼의 평균
+SELECT COUNT(*), SUM(sal), AVG(sal), SUM(sal)/COUNT(*) FROM emp;
+SELECT COUNT(*), SUM(comm), count(comm), AVG(comm), SUM(comm)/COUNT(*) FROM emp;
+
+-- MAX, MIN
+SELECT MAX(sal), MIN(sal) FROM emp;
+
+-- professor 테이블에서 교수들의 연봉 조회(교수번호, 이름, 월급여, 보너스, 연봉:pay*12+bonus)
+SELECT profno, NAME, pay, ifnull(bonus, 0), pay*12+ifnull(bonus, 0) 연봉  FROM professor;
+
+-- groupby
+-- 부서별 인원수
+
+SELECT deptno, COUNT(*)
+FROM emp
+GROUP BY deptno;
+
+-- 부서별 직원 수, 급여 평균, 총 급여, 가장 큰 급여, 가장 작은 급여
+SELECT deptno, COUNT(*), AVG(ifnull(sal, 0)), SUM(ifnull(sal, 0)), MAX(ifnull(sal, 0)), MIN(ifnull(sal, 0))
+FROM emp
+GROUP BY deptno;
+
+-- student 테이블에서 학년별 가장 큰 키와 가장 작은 키 조회
+SELECT grade, COUNT(*), MAX(height), MIN(height)
+FROM student
+GROUP BY grade;
+
+-- student 테이블에서 학과 deptno1, 학년별 가장 ㅋ큰 키와 가장 작은 키 조회
+SELECT deptno1,grade, COUNT(*), MAX(height), MIN(height)
+FROM student
+GROUP BY deptno1, grade;
+
+-- emp 테이블에서 부서별, 업무별(job) 평균 급여,최대 급여, 최소 급여 조회
+SELECT deptno, job, AVG(IFNULL(sal, 0)), MAX(IFNULL(sal,0)), MIN(IFNULL(sal,0))
+FROM emp
+GROUP BY deptno, job;
+
+-- professor 테이블에서 학과별, 직급별 평균 연봉 조회
+SELECT deptno, POSITION, AVG(pay*12+IFNULL(bonus,0))
+FROM professor
+GROUP BY deptno, POSITION;
 
 
+-- having 절: grouping한 것에 대한 조건(where과 다름 왜냐하면 groupby 이후에 실행되어야 함. where은 groupby보다 먼저 실행됨)
+-- emp 테이블에서 부서별 평균 급여를 조회하되, 평균이 2000미만인 부서만 조회
+SELECT deptno, AVG(sal)
+FROM emp
+GROUP BY deptno
+having AVG(sal) < 2000;
 
+-- professor테이블에서 학과별급여 평균이 400 이상인 학과의 인원 수, 급여 평균 조회
+SELECT deptno, COUNT(*) 인원수, AVG(pay) 급여평균 
+FROM professor
+GROUP BY deptno
+HAVING AVG(pay)>=400;
+
+-- student 테이블에서 deptno1이 101인 학생들의 학년별 평균 키를 구하되, 평균 키가 180 이상인 학년만 출력
+SELECT deptno1, grade, avg(height)
+FROM student 
+WHERE deptno1 = 101
+GROUP BY grade
+HAVING AVG(height) >= 180
+ORDER BY AVG(height);
+
+-- gogak 테이블에서 출생연도별 포인트 평균 조회
+SELECT SUBSTR(jumin, 1, 2), AVG(POINT) 
+FROM gogak
+GROUP BY SUBSTR(jumin, 1, 2);
+
+-- student 테이블에서 각 학과(deptno1)와 학년별 평균 몸무게, 최대/최소 몸무게 조회
+SELECT deptno1 학과 , grade 학년, AVG(weight) 평균몸무게, MAX(weight) 최대몸무게, MIN(weight) 최소몸무게
+FROM student
+GROUP BY deptno1, grade;
+
+-- emp 테이블에서 부서와 직군별 인원 수 조회
+SELECT deptno, job, COUNT(*)
+FROM emp
+GROUP BY deptno, job;
