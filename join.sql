@@ -197,3 +197,70 @@ SELECT p.profno, p.`name`, d.dname
 FROM professor p LEFT JOIN department d
 ON(p.deptno = d.deptno)
 WHERE d.part = 300;
+
+-- exam_01, hakjum
+-- 학점ㅁ별 인원수(학점, 인원수)
+SELECT h.grade, COUNT(*)
+FROM exam_01 e LEFT JOIN hakjum h
+ON(e.total BETWEEN h.min_point AND h.max_point)
+GROUP BY h.grade;
+
+-- student, exam_01
+-- 학년별 평균
+SELECT AVG(e.total)
+FROM student s LEFT JOIN exam_01 e
+ON(s.studno = e.studno)
+GROUP BY s.grade;
+
+-- gogak, gift
+-- '산악용 자전거' 필요 개수 : 포인트로 산악용 자전거를 살 수 있는 고객 수
+SELECT COUNT(*)
+FROM gogak g LEFT JOIN gift gif
+ON(g.`point` >= gif.g_start)
+WHERE gif.gname= '산악용자전거';
+
+-- gogak, gift
+-- 모슨 상품의 필요 갯수: 고객이 포인트로 각 선물을 살 수 있는 상품 수
+SELECT gif.gname, COUNT(*)
+FROM gogak g LEFT JOIN gift gif
+ON(g.`point`>= gif.g_start)
+GROUP BY gif.gname;
+
+-- student, department
+-- 공과대학 학생 수
+SELECT COUNT(*)
+FROM student s LEFT JOIN department d
+ON(s.deptno1 = d.deptno)
+LEFT JOIN department d1
+ON(d.part = d1.deptno)
+LEFT JOIN department d2
+ON(d1.part = d2.deptno)
+WHERE d2.dname = '공과대학';
+
+-- 서진수 학생의정보 조회: 학번, 이름, id, 주민번호, 생일, 전화번호, 키, 몸무게, 주전공학과명,부전공학과명, 담당교수명, 
+-- 성적, 학점 출력
+SELECT s.studno, s.`name`, s.id, s.grade, s.jumin, s.birthday, s.tel, s.height, s.weight, d1.dname, d2.dname, p.`name` 담당교수, e.total, h.grade 
+FROM student s LEFT JOIN exam_01 e
+ON(s.studno = e.studno)
+LEFT JOIN professor p
+ON(s.profno = p.profno)
+LEFT JOIN department d1
+ON(s.deptno1 = d1.deptno)
+LEFT JOIN department d2
+ON(s.deptno2 = d2.deptno)
+LEFT JOIN hakjum h
+ON(e.total BETWEEN h.min_point AND h.max_point)
+WHERE s.`name` = '서진수';
+
+-- 본인의 급여가 직속 상사보다 많은 사원 조회
+SELECT e.EMPNO, e.name, e.pay, m.empno, m.name, m.pay
+FROM emp2 e LEFT JOIN emp2 m
+ON(m.PEMPNO = m.EMPNO)
+WHERE e.pay>m.pay;
+
+-- 사원이 한 명도 배정되지 않은 부서 번호, 부서 명 조회
+SELECT d.deptno, d.DNAME
+FROM dept d LEFT JOIN emp e
+ON(d.deptno = e.DEPTNO)
+WHERE e.DEPTNO IS NULL;
+
