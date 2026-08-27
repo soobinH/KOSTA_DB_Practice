@@ -80,3 +80,21 @@ DROP COLUMN email;
 -- modify column : 테이블의 칼럼 변경
 ALTER TABLE person
 RENAME COLUMN city TO AREA;
+
+CREATE TABLE dept_t AS
+SELECT * FROM dept;
+
+ALTER TABLE dept_t
+RENAME COLUMN loc TO AREA;
+
+-- dept_t 테이블에 loc2컬럼 추가, 크기 255, 기본값'seoul'
+ALTER TABLE dept_t
+ADD COLUMN loc2 VARCHAR(255) DEFAULT 'SEOUL';
+
+-- loc2를 area2로 변경
+ALTER TABLE dept_t
+RENAME COLUMN loc2 TO AREA2;
+
+RENAME TABLE dept_t TO dept_temp;
+
+
