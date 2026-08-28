@@ -14,9 +14,9 @@ AND s.STAMOUNT = 0;
 -- 문제 2번
 SELECT p.PDSUBNAME 제품명, p.PDCOST 제품원가, p.PDPRICE 제품가격
 FROM product p
-WHERE p.PDCOST > (SELECT MIN(pdcost) FROM product WHERE pdname = 'tv')
-AND p.PDCOST < (SELECT MAX(pdcost) FROM product WHERE pdname = 'cellphone');
-
+WHERE p.PDCOST >ANY (SELECT pdcost FROM product WHERE pdname = 'tv')
+AND p.PDCOST <ANY (SELECT pdcost FROM product WHERE pdname = 'cellphone')
+ORDER BY 3 DESC;
 
 -- 문제 3번
 CREATE TABLE DISCARDED_PRODUCT (
@@ -32,7 +32,14 @@ CREATE TABLE DISCARDED_PRODUCT (
 );
 
 
+-- 문제 4번
+INSERT INTO discarded_product(pdno, pdname, pdsubname, factno, pddate, pdcost, PDPRICE, pdamount)
+SELECT * FROM product WHERE factno = 98712;
+
+UPDATE discarded_product SET DISCARDED_DATE = CURTIME();
 
 
-
+START TRANSACTION;
+DELETE FROM product WHERE factno = 98712;
+ROLLBACK;
 
