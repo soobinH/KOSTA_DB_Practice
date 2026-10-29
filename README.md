@@ -4,7 +4,7 @@ KOSTA(한국소프트웨어기술진흥협회) 교육 과정 및 데이터베이
 관계형 데이터베이스(RDBMS)의 핵심 개념을 이해하고, 실무에 쓰이는 복잡한 SQL 쿼리 작성과 데이터베이스 모델링 역량을 기르기 위해 작성된 코드들을 기록합니다.
 
 ## 🛠 Tech Stack
-- **Database:** MariaDB, Oracle
+- **Database:** MariaDB
 - **Language:** SQL
 - **Design Tool:** draw.io (ERD 및 다이어그램 설계)
 
